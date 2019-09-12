@@ -1,4 +1,4 @@
-# SpyroReignitedModManager
+# Spyro Reignited Mod Manager
 A Mod Manager for the Steam version of Spyro Reignited Trilogy.
 > How to use:
 > 1.  Download the latest version of the program above. (Spyro Reignited Mod Manager vX)
