@@ -57,3 +57,7 @@ You can create a shareable version of your mod either when adding it, or by clic
 
 * Thank you Toys For Bobs for creating such an amazing game.
 * Thanks to the members of the Spyro Reignited Modding Discord server that helped me.
+
+## Additional Information
+
+My anti-virus, Malwarebytes, returns a false-positive result: [MachineLearning/Anomalous.100%](https://blog.malwarebytes.com/detections/machinelearning-anomalous-100/) - which is based on a machine learning engine and heuristics. It is [known for providing false positives](https://forums.malwarebytes.com/topic/229840-false-positive-machinelearninganomalous100/)
