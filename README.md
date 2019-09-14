@@ -4,6 +4,8 @@ This program allows creating & managing multiple mod files for use with the Stea
 
 Mods can contain the following information: the name of the mod, creator of the mod, description of what the mod does, and a thumbnail to visually show the mod in action. If you want to share a mod that you made, you can export it as a shareable Spyro mod file. This version will be uneditable when loaded into the manager.
 
+![](Screenshot.png)
+
 ## Getting Started
 
 It's simple and quick to set up the mod manager. Just follow the below steps and you'll be there in no time.
