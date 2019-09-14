@@ -230,7 +230,7 @@ namespace SpyroModManager
                 InitialDirectory = "C:\\Pictures",
                 CheckFileExists = true,
                 CheckPathExists = true,
-                Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png"
+                Filter = "Image files (*.jpg, *.jpeg, *.png, *.gif)|*.jpg;*.jpeg;*.png;*.gif"
             };
 
             // Check the dialog closed OK

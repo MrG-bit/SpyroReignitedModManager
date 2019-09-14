@@ -21,7 +21,7 @@ namespace SpyroModManager
     public partial class MainForm : Form
     {
         // Version number of the program
-        private Version version = new Version(1, 2, 1);
+        private Version version = new Version(1, 2, 2);
 
         private string spyroPath = "";      // File path to Spyro.exe (in Steam folders)
         private string pakPath = "";        // Path to the pak folder (in Steam folders)
