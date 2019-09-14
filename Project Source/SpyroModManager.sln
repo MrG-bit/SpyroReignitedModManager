@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpyroModManager", "SpyroModManager.csproj", "{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3295FDD9-BEE2-48E1-BD1C-F310FD62D61F}
+	EndGlobalSection
+EndGlobal
