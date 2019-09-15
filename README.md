@@ -4,10 +4,11 @@ This program allows creating & managing multiple mod files for use with the Stea
 
 Mods can contain the following information: the name of the mod, creator of the mod, description of what the mod does, and a thumbnail to visually show the mod in action. If you want to share a mod that you made, you can export it as a shareable Spyro mod file. This version will be uneditable when loaded into the manager.
 
-There are also two launch options: 
-* running in vanilla (i.e. no mods activated),
+There are also various launch options: 
+* running in vanilla (i.e. no mods activated).
 * running the game using the Console Injector which will enable the developer console. Note that if you choose to use the Console Injector launch option, you must [download](https://drive.google.com/file/d/1Z6SY-c7wbEPN9FsM-kZHiqtYbAsA6F2g/view) the program.
-
+* skip the startup sequence (Toys For Bob, Activision & Unreal bumpers).
+</br>
 ![](Screenshot.png)
 ![](Preview.gif)
 
