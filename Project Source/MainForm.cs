@@ -21,10 +21,14 @@ namespace SpyroModManager
     public partial class MainForm : Form
     {
         // Version number of the program
-        private Version version = new Version(1, 2, 2);
+        private Version version = new Version(1, 2, 3);
 
         private string spyroPath = "";      // File path to Spyro.exe (in Steam folders)
         private string pakPath = "";        // Path to the pak folder (in Steam folders)
+        private string moviePath = "";      // Path to the movie folder (in Steam folders)
+        private bool wasSpyroOpen = false;  // Keep track of if spyro was open last time checked
+        private Timer injectorTimer = null; // Timer for opening the injector executable
+        private Timer cutsceneTimer = null; // Timer for re-enabling the cutscenes
         private ModManagerData data;        // Reference to the mod manager data
 
         // List of mods loaded into the manager
@@ -32,11 +36,13 @@ namespace SpyroModManager
 
         public static bool IsSpyroOpen { get { return IsProcessOpen("Spyro"); } }
         private bool IsValidSpyroPath { get { return spyroPath != "" && spyroPath.ToLower().EndsWith("spyro.exe"); } }
+        private bool IsValidInjectorPath { get { return data != null && !string.IsNullOrWhiteSpace(data.injectorPath) && data.injectorPath.ToLower().EndsWith(".exe") && File.Exists(data.injectorPath); } }
+        private bool IsVanilla { get { return checkVanilla.Checked; } }
         private bool ModFolderExists { get { return Directory.Exists(PathToModsFolder); } }
         private bool DataFileExists { get { return File.Exists(PathToDataFile); } }
         private string PathToModsFolder { get { return Application.StartupPath + "\\Spyro Reignited Mods"; } }
         private string PathToDataFile { get { return Application.StartupPath + "\\Data.dat"; } }
-        private string PathToSpyroGame { get { return IsValidSpyroPath ? spyroPath.Remove(spyroPath.Length - 9, 9) : ""; } }
+        private string PathToSpyroGame { get { return IsValidSpyroPath ?  spyroPath.Remove(spyroPath.Length - 9, 9) : ""; }        }
         private string NewLine { get { return Environment.NewLine; } }
         private SpyroMod SelectedMod { get { if (listMods.SelectedIndex >= 0 && listMods.SelectedIndex < mods.Count) return mods[listMods.SelectedIndex]; else return null; } }
 
@@ -47,6 +53,12 @@ namespace SpyroModManager
         {
             InitializeComponent();
 
+            // Hook into idle
+            Application.Idle += OnApplicationIdle;
+
+            // Hook to close
+            FormClosed += OnFormClose;
+
             // Set form title
             Text = "Spyro Reignited Mod Manager";
 
@@ -55,6 +67,22 @@ namespace SpyroModManager
 
             // Disable form resizing
             FormBorderStyle = FormBorderStyle.FixedDialog;
+
+            // Create timer for injector
+            injectorTimer = new Timer
+            {
+                Interval = 20000,
+                Enabled = false
+            };
+            injectorTimer.Tick += OnInjectorTimerElapsed;
+
+            // Create timer for cutscenes
+            cutsceneTimer = new Timer
+            {
+                Interval = 20000,
+                Enabled = false
+            };
+            cutsceneTimer.Tick += OnCutsceneTimerElapsed;
 
             // Set the version label text
             lblVersion.Text += version.ToString();
@@ -67,6 +95,118 @@ namespace SpyroModManager
             
             // Link the list box to the list of mods
             listMods.DataSource = mods;
+        }
+
+        /// <summary>
+        /// Called when the form is closed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnFormClose(object sender, FormClosedEventArgs e)
+        {
+            // If the cutscene timer is active, revert the cutscenes straight away
+            if (cutsceneTimer.Enabled)
+                OnCutsceneTimerElapsed(null, null);
+        }
+
+        /// <summary>
+        /// Called when the cutscene timer elapses.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCutsceneTimerElapsed(object sender, EventArgs e)
+        {
+            // Re-enable the cutscenes
+            string[] files = Directory.GetFiles(moviePath);
+
+            // Iterate through the files
+            foreach (string file in files)
+            {
+                // Get file info
+                FileInfo fileInfo = new FileInfo(file);
+
+                // Check if is a bumper movie file
+                if (fileInfo.Name.ToLower().StartsWith("_bumper") && fileInfo.Extension.ToLower() == ".mp4")
+                {
+                    // Get the new name (remove the underscore)
+                    string newFileName = fileInfo.Name.Remove(0, 1);
+
+                    // Rename the file
+                    File.Move(fileInfo.FullName, moviePath + newFileName);
+                }
+            }
+
+            // Stop the timer from repeating
+            cutsceneTimer.Stop();
+        }
+
+        /// <summary>
+        /// Called when the injector timer elapses.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnInjectorTimerElapsed(object sender, EventArgs e)
+        {
+            // Check if spyro is open
+            if (IsSpyroOpen)
+            {
+                // Stop the timer from repeating
+                injectorTimer.Stop();
+
+                // Create a process start info object
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
+                {
+                    FileName = data.injectorPath,
+                    WorkingDirectory = new FileInfo(data.injectorPath).Directory.FullName
+                };
+
+                // Start the process
+                Process.Start(processStartInfo);
+            }
+        }
+
+        /// <summary>
+        /// Called when nothing in event queue.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnApplicationIdle(object sender, EventArgs e)
+        {
+            // Check if spyro is open
+            bool isSpyroOpen = IsSpyroOpen;
+
+            // State changed
+            if (isSpyroOpen != wasSpyroOpen)
+            {
+                // Spyro was opened
+                if (isSpyroOpen)
+                {
+                    // Disable the checkboxes
+                    checkVanilla.Enabled = false;
+                    checkConsoleInjector.Enabled = false;
+                    checkSkipIntro.Enabled = false;
+
+                    // Disable launch button
+                    btnLaunchSpyro.Enabled = false;
+                }
+                // Otherwise spyro was closed
+                else
+                {
+                    // Enable the checkboxes
+                    checkVanilla.Enabled = true;
+                    checkConsoleInjector.Enabled = true;
+                    checkSkipIntro.Enabled = true;
+
+                    // Enable the launch button
+                    btnLaunchSpyro.Enabled = true;
+
+                    // Update vanilla and set files
+                    SetVanilla(checkVanilla.Checked);
+                }
+            }
+
+            // Update old variable
+            wasSpyroOpen = isSpyroOpen;
         }
 
         /// <summary>
@@ -150,6 +290,15 @@ namespace SpyroModManager
 
                 // Try to load the spyro path that's in the config
                 SelectSpyroPath(data.spyroPath);
+
+                // Set if vanilla or not
+                SetVanilla(data.isVanilla);
+
+                // Set checkbox for console injector
+                checkConsoleInjector.Checked = data.useInjector;
+
+                // Set checkbox for skipping cutscenes
+                checkSkipIntro.Checked = data.skipIntro;
             }
         }
 
@@ -185,6 +334,13 @@ namespace SpyroModManager
                     // Set to empty string
                     data.spyroPath = "";
                 }
+            }
+
+            // Validate injector path
+            if (data.injectorPath == null)
+            {
+                // Set to an empty string
+                data.injectorPath = "";
             }
         }       
 
@@ -245,6 +401,10 @@ namespace SpyroModManager
 
                 // Update the pak path label
                 lblPakPath.Text = "Pak folder: " + pakPath;
+
+
+                // Determine the movie path
+                moviePath = PathToSpyroGame + "Falcon\\Content\\Movies\\";
 
                 // Update the path loaded label
                 lblPathLoaded.Text = "Path loaded";
@@ -334,6 +494,49 @@ namespace SpyroModManager
         }
 
         /// <summary>
+        /// Set whether running with mods or in vanilla.
+        /// </summary>
+        /// <param name="vanilla">Value.</param>
+        private void SetVanilla(bool vanilla)
+        {
+            // Set the checkbox
+            checkVanilla.Checked = vanilla;
+
+            // Save to data file
+            data.isVanilla = vanilla;
+            SaveToDataFile(data);
+            
+            // Check for cancel
+            if (!IsValidSpyroPath || IsSpyroOpen)
+                return;
+
+            // Iterate through the mods
+            foreach (SpyroMod mod in mods)
+            {
+                // Check if the mod is enabled
+                if (mod.enabled)
+                {
+                    // Check if vanilla
+                    if (IsVanilla)
+                    {
+                        // Disable the mod
+                        DisableMod(mod);
+
+                        // Set to enabled and save
+                        mod.enabled = true;
+                        SaveToModsFolder(mod);
+                    }
+                    // Otherwise enable the mod
+                    else
+                    {
+                        mod.enabled = false;
+                        EnableMod(mod);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Enable the given mod.
         /// </summary>
         /// <param name="mod">Mod to enable.</param>
@@ -346,11 +549,15 @@ namespace SpyroModManager
             // Enable the mod
             mod.enabled = true;
 
-            // Determine the path to output the .pak file
-            string path = pakPath + "pakchunk" + (3 + mod.order) + "-" + mod.name + ".pak";
+            // Check if running mods
+            if (!IsVanilla)
+            {
+                // Determine the path to output the .pak file
+                string path = pakPath + "pakchunk" + (3 + mod.order) + "-" + mod.name + ".pak";
 
-            // Output the .pak content to the path
-            mod.ExportPak(path);
+                // Output the .pak content to the path
+                mod.ExportPak(path);
+            }
 
             // Update the mod
             SaveToModsFolder(mod);
@@ -561,7 +768,7 @@ namespace SpyroModManager
                 lblModCreator.Text = "Created by";
                 txtModDescription.Text = "";
                 lblModFileName.Text = "Filename:";
-                picThumbnail.Image = Properties.Resources.ReignitedTitle;
+                picThumbnail.Image = Properties.Resources.SpyroStand;
 
                 btnToggle.Text = "Enable";
                 btnEditMod.Enabled = true;
@@ -650,7 +857,7 @@ namespace SpyroModManager
                 InitialDirectory = (IsValidSpyroPath ? PathToSpyroGame : ""),
                 Multiselect = false,
                 Title = "Choose Spyro.exe in your Steam folder",
-                Filter = "Executable files (*.exe)|*.exe"
+                Filter = "Spyro Executable (*Spyro.exe)|*Spyro.exe"
             };
 
             // Check that the dialog finished successfully
@@ -658,6 +865,79 @@ namespace SpyroModManager
             {
                 // Select the path
                 SelectSpyroPath(openFileDialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Called when the "Launch Spyro" button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnLaunchSpyro_Click(object sender, EventArgs e)
+        {
+            // Check that spyro isn't already open and there's a valid path to launch the exe
+            if (!IsSpyroOpen && IsValidSpyroPath)
+            {
+                // Check if the console injector should be used
+                if (checkConsoleInjector.Checked)
+                {
+                    // Check if the injector path isn't valid
+                    if (!IsValidInjectorPath)
+                    {
+                        // Create injector form
+                        InjectorForm injectorForm = new InjectorForm("");
+
+                        // Check the form finished OK
+                        if (injectorForm.ShowDialog() == DialogResult.OK)
+                        {
+                            // Update the data file
+                            data.injectorPath = injectorForm.InjectorPath;
+                            SaveToDataFile(data);
+                        }
+                        // Otherwise cancel
+                        else
+                            return;
+                    }
+
+                    // Start the injector timer
+                    injectorTimer.Stop();
+                    injectorTimer.Start();
+                }
+
+                // Check if should skip intro cutscenes
+                if (data.skipIntro)
+                {
+                    // Check the cutscene timer isn't already enabled
+                    if (!cutsceneTimer.Enabled)
+                    {
+                        // Disable the cutscenes
+                        string[] files = Directory.GetFiles(moviePath);
+
+                        // Iterate through the files
+                        foreach (string file in files)
+                        {
+                            // Get file info
+                            FileInfo fileInfo = new FileInfo(file);
+
+                            // Check if is a bumper movie file
+                            if (fileInfo.Name.ToLower().StartsWith("bumper") && fileInfo.Extension.ToLower() == ".mp4")
+                            {
+                                // Get the new name (remove the underscore)
+                                string newFileName = "_" + fileInfo.Name;
+
+                                // Rename the file
+                                File.Move(fileInfo.FullName, moviePath + newFileName);
+                            }
+                        }
+                    }
+
+                    // Start the cutscene timer to revert the changes
+                    cutsceneTimer.Stop();
+                    cutsceneTimer.Start();
+                }
+
+                // Start the process
+                Process.Start(spyroPath);
             }
         }
 
@@ -750,6 +1030,8 @@ namespace SpyroModManager
             foreach (SpyroMod mod in mods)
                 DisableMod(mod);
 
+            // Update list bindings
+            UpdateListBindings();
             // Mod changed
             SelectedModChanged();
         }
@@ -848,6 +1130,45 @@ namespace SpyroModManager
             // Otherwise don't allow it
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        /// <summary>
+        /// Called when the "With No Mods" checkbox is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkVanilla_CheckedChanged(object sender, EventArgs e)
+        {
+            // Check if can set
+            if (IsValidSpyroPath && !IsSpyroOpen)
+            {
+                // Set vanilla based on the check box value
+                SetVanilla(checkVanilla.Checked);
+            }
+        }
+
+        /// <summary>
+        /// Called when the "Use Console Injector" checkbox is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkConsoleInjector_CheckedChanged(object sender, EventArgs e)
+        {
+            // Save to file
+            data.useInjector = checkConsoleInjector.Checked;
+            SaveToDataFile(data);
+        }
+
+        /// <summary>
+        /// Called when the "Skip Intro Cutscenes" checkbox is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkSkipIntro_CheckedChanged(object sender, EventArgs e)
+        {
+            // Save to file
+            data.skipIntro = checkSkipIntro.Checked;
+            SaveToDataFile(data);
         }
     }
 }

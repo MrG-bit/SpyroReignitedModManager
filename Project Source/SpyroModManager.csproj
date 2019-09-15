@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InjectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InjectorForm.Designer.cs">
+      <DependentUpon>InjectorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +77,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SpyroMod.cs" />
+    <EmbeddedResource Include="InjectorForm.resx">
+      <DependentUpon>InjectorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

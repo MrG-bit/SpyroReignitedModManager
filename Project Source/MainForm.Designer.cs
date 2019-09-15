@@ -48,20 +48,24 @@
             this.lblVersion = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkVanilla = new System.Windows.Forms.CheckBox();
+            this.checkConsoleInjector = new System.Windows.Forms.CheckBox();
+            this.btnLaunchSpyro = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.picThumbnail = new System.Windows.Forms.PictureBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.txtModDescription = new System.Windows.Forms.TextBox();
             this.lblModFileName = new System.Windows.Forms.Label();
             this.lblModCreator = new System.Windows.Forms.Label();
             this.lblModOrigName = new System.Windows.Forms.Label();
-            this.picThumbnail = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.checkSkipIntro = new System.Windows.Forms.CheckBox();
             this.grpInfo.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picThumbnail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picThumbnail)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnMoveUp
@@ -177,9 +181,9 @@
             this.lblStep3.AutoSize = true;
             this.lblStep3.Location = new System.Drawing.Point(15, 126);
             this.lblStep3.Name = "lblStep3";
-            this.lblStep3.Size = new System.Drawing.Size(122, 13);
+            this.lblStep3.Size = new System.Drawing.Size(41, 13);
             this.lblStep3.TabIndex = 12;
-            this.lblStep3.Text = "Step 3.    Launch Spyro!";
+            this.lblStep3.Text = "Step 3.";
             // 
             // lblPakPath
             // 
@@ -245,40 +249,97 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkSkipIntro);
+            this.groupBox1.Controls.Add(this.checkVanilla);
+            this.groupBox1.Controls.Add(this.checkConsoleInjector);
+            this.groupBox1.Controls.Add(this.btnLaunchSpyro);
             this.groupBox1.Controls.Add(this.btnAddMod);
-            this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Controls.Add(this.btnSpyroPath);
             this.groupBox1.Controls.Add(this.lblStep1);
             this.groupBox1.Controls.Add(this.lblStep2);
             this.groupBox1.Controls.Add(this.lblStep3);
             this.groupBox1.Controls.Add(this.lblPathLoaded);
+            this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Location = new System.Drawing.Point(330, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(429, 156);
+            this.groupBox1.Size = new System.Drawing.Size(429, 175);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Instructions";
             // 
+            // checkVanilla
+            // 
+            this.checkVanilla.AutoSize = true;
+            this.checkVanilla.Location = new System.Drawing.Point(314, 125);
+            this.checkVanilla.Name = "checkVanilla";
+            this.checkVanilla.Size = new System.Drawing.Size(92, 17);
+            this.checkVanilla.TabIndex = 20;
+            this.checkVanilla.Text = "Without Mods";
+            this.checkVanilla.UseVisualStyleBackColor = true;
+            this.checkVanilla.CheckedChanged += new System.EventHandler(this.checkVanilla_CheckedChanged);
+            // 
+            // checkConsoleInjector
+            // 
+            this.checkConsoleInjector.AutoSize = true;
+            this.checkConsoleInjector.Location = new System.Drawing.Point(171, 125);
+            this.checkConsoleInjector.Name = "checkConsoleInjector";
+            this.checkConsoleInjector.Size = new System.Drawing.Size(127, 17);
+            this.checkConsoleInjector.TabIndex = 19;
+            this.checkConsoleInjector.Text = "With Console Injector";
+            this.checkConsoleInjector.UseVisualStyleBackColor = true;
+            this.checkConsoleInjector.CheckedChanged += new System.EventHandler(this.checkConsoleInjector_CheckedChanged);
+            // 
+            // btnLaunchSpyro
+            // 
+            this.btnLaunchSpyro.Location = new System.Drawing.Point(62, 121);
+            this.btnLaunchSpyro.Name = "btnLaunchSpyro";
+            this.btnLaunchSpyro.Size = new System.Drawing.Size(91, 23);
+            this.btnLaunchSpyro.TabIndex = 18;
+            this.btnLaunchSpyro.Text = "Launch Spyro";
+            this.btnLaunchSpyro.UseVisualStyleBackColor = true;
+            this.btnLaunchSpyro.Click += new System.EventHandler(this.btnLaunchSpyro_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::SpyroModManager.Properties.Resources.ReignitedTitle;
+            this.pictureBox1.Location = new System.Drawing.Point(239, 25);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(138, 78);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 17;
+            this.pictureBox1.TabStop = false;
+            // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.picThumbnail);
             this.groupBox2.Controls.Add(this.groupBox3);
             this.groupBox2.Controls.Add(this.lblModFileName);
             this.groupBox2.Controls.Add(this.lblModCreator);
             this.groupBox2.Controls.Add(this.lblModOrigName);
-            this.groupBox2.Location = new System.Drawing.Point(330, 188);
+            this.groupBox2.Location = new System.Drawing.Point(329, 215);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(429, 248);
+            this.groupBox2.Size = new System.Drawing.Size(429, 221);
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Mod Information";
             // 
+            // picThumbnail
+            // 
+            this.picThumbnail.ErrorImage = null;
+            this.picThumbnail.Image = global::SpyroModManager.Properties.Resources.SpyroStand;
+            this.picThumbnail.Location = new System.Drawing.Point(240, 50);
+            this.picThumbnail.Name = "picThumbnail";
+            this.picThumbnail.Size = new System.Drawing.Size(179, 144);
+            this.picThumbnail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picThumbnail.TabIndex = 3;
+            this.picThumbnail.TabStop = false;
+            // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.picThumbnail);
             this.groupBox3.Controls.Add(this.txtModDescription);
-            this.groupBox3.Location = new System.Drawing.Point(10, 68);
+            this.groupBox3.Location = new System.Drawing.Point(6, 64);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(413, 150);
+            this.groupBox3.Size = new System.Drawing.Size(228, 130);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Description";
@@ -287,17 +348,17 @@
             // 
             this.txtModDescription.AcceptsReturn = true;
             this.txtModDescription.AcceptsTab = true;
-            this.txtModDescription.Location = new System.Drawing.Point(8, 19);
+            this.txtModDescription.Location = new System.Drawing.Point(6, 19);
             this.txtModDescription.Multiline = true;
             this.txtModDescription.Name = "txtModDescription";
             this.txtModDescription.ReadOnly = true;
-            this.txtModDescription.Size = new System.Drawing.Size(211, 125);
+            this.txtModDescription.Size = new System.Drawing.Size(211, 105);
             this.txtModDescription.TabIndex = 2;
             // 
             // lblModFileName
             // 
             this.lblModFileName.AutoSize = true;
-            this.lblModFileName.Location = new System.Drawing.Point(7, 224);
+            this.lblModFileName.Location = new System.Drawing.Point(3, 200);
             this.lblModFileName.Name = "lblModFileName";
             this.lblModFileName.Size = new System.Drawing.Size(55, 13);
             this.lblModFileName.TabIndex = 4;
@@ -306,7 +367,7 @@
             // lblModCreator
             // 
             this.lblModCreator.AutoSize = true;
-            this.lblModCreator.Location = new System.Drawing.Point(8, 42);
+            this.lblModCreator.Location = new System.Drawing.Point(4, 40);
             this.lblModCreator.Name = "lblModCreator";
             this.lblModCreator.Size = new System.Drawing.Size(61, 13);
             this.lblModCreator.TabIndex = 1;
@@ -315,32 +376,22 @@
             // lblModOrigName
             // 
             this.lblModOrigName.AutoSize = true;
-            this.lblModOrigName.Location = new System.Drawing.Point(7, 20);
+            this.lblModOrigName.Location = new System.Drawing.Point(3, 18);
             this.lblModOrigName.Name = "lblModOrigName";
             this.lblModOrigName.Size = new System.Drawing.Size(38, 13);
             this.lblModOrigName.TabIndex = 0;
             this.lblModOrigName.Text = "Name:";
             // 
-            // picThumbnail
+            // checkSkipIntro
             // 
-            this.picThumbnail.ErrorImage = null;
-            this.picThumbnail.Image = global::SpyroModManager.Properties.Resources.ReignitedTitle;
-            this.picThumbnail.Location = new System.Drawing.Point(225, 20);
-            this.picThumbnail.Name = "picThumbnail";
-            this.picThumbnail.Size = new System.Drawing.Size(182, 124);
-            this.picThumbnail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picThumbnail.TabIndex = 3;
-            this.picThumbnail.TabStop = false;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::SpyroModManager.Properties.Resources.SpyroStand;
-            this.pictureBox1.Location = new System.Drawing.Point(279, 19);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(138, 120);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 17;
-            this.pictureBox1.TabStop = false;
+            this.checkSkipIntro.AutoSize = true;
+            this.checkSkipIntro.Location = new System.Drawing.Point(171, 149);
+            this.checkSkipIntro.Name = "checkSkipIntro";
+            this.checkSkipIntro.Size = new System.Drawing.Size(124, 17);
+            this.checkSkipIntro.TabIndex = 21;
+            this.checkSkipIntro.Text = "Skip Intro Cutscenes";
+            this.checkSkipIntro.UseVisualStyleBackColor = true;
+            this.checkSkipIntro.CheckedChanged += new System.EventHandler(this.checkSkipIntro_CheckedChanged);
             // 
             // MainForm
             // 
@@ -366,12 +417,12 @@
             this.grpInfo.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picThumbnail)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picThumbnail)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -393,7 +444,6 @@
         private System.Windows.Forms.Label lblPathLoaded;
         private System.Windows.Forms.ListBox listMods;
         private System.Windows.Forms.GroupBox grpInfo;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -403,7 +453,12 @@
         private System.Windows.Forms.Label lblModOrigName;
         private System.Windows.Forms.Label lblModFileName;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button btnLaunchSpyro;
+        private System.Windows.Forms.CheckBox checkVanilla;
+        private System.Windows.Forms.CheckBox checkConsoleInjector;
+        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox picThumbnail;
+        private System.Windows.Forms.CheckBox checkSkipIntro;
     }
 }
 
