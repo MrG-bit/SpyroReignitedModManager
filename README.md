@@ -8,7 +8,7 @@ There are also various launch options:
 * running in vanilla (i.e. no mods activated).
 * running the game using the Console Injector which will enable the developer console. Note that if you choose to use the Console Injector launch option, you must [download](https://drive.google.com/file/d/1Z6SY-c7wbEPN9FsM-kZHiqtYbAsA6F2g/view) the program.
 * skip the startup sequence (Toys For Bob, Activision & Unreal bumpers).
-</br>
+
 ![](Screenshot.png)
 ![](Preview.gif)
 
