@@ -22,6 +22,10 @@ namespace SpyroModManager
         public Bitmap thumbnail;                // Thumbnail of the mod
         public bool enabled;                    // Whether the mod is enabled
         public int order;                       // The priority of the mod
+        public string pakName;                  // Name of the pak (does not include path or extension)
+
+        // Pak file name
+        public string PakFileName { get { return "pakchunk" + (3 + order) + "-" + name + ".pak"; } }
 
         // .pak content
         public byte[] PakContent { get; private set; }
@@ -43,6 +47,7 @@ namespace SpyroModManager
             thumbnail = null;
             enabled = false;
             order = 0;
+            pakName = name;
         }
 
         /// <summary>
@@ -59,6 +64,7 @@ namespace SpyroModManager
             thumbnail = copy.thumbnail == null ? null : (Bitmap)copy.thumbnail.Clone();
             enabled = copy.enabled;
             order = copy.order;
+            pakName = name;
 
             // Create the pak content array
             PakContent = new byte[copy.PakContent.Length];
@@ -147,6 +153,10 @@ namespace SpyroModManager
 
             // Update mod file name
             mod.fileName = filePath.Split('\\').Last();
+
+            // Validate the pak name
+            if (string.IsNullOrWhiteSpace(mod.pakName))
+                mod.pakName = mod.name;
 
             // Return the mod
             return mod;

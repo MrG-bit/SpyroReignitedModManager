@@ -41,13 +41,14 @@
             this.lblStep1 = new System.Windows.Forms.Label();
             this.lblStep2 = new System.Windows.Forms.Label();
             this.lblStep3 = new System.Windows.Forms.Label();
-            this.lblPakPath = new System.Windows.Forms.Label();
+            this.lblSavePath = new System.Windows.Forms.Label();
             this.lblPathLoaded = new System.Windows.Forms.Label();
             this.listMods = new System.Windows.Forms.ListBox();
             this.grpInfo = new System.Windows.Forms.GroupBox();
             this.lblVersion = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkSkipIntro = new System.Windows.Forms.CheckBox();
             this.checkVanilla = new System.Windows.Forms.CheckBox();
             this.checkConsoleInjector = new System.Windows.Forms.CheckBox();
             this.btnLaunchSpyro = new System.Windows.Forms.Button();
@@ -59,7 +60,7 @@
             this.lblModFileName = new System.Windows.Forms.Label();
             this.lblModCreator = new System.Windows.Forms.Label();
             this.lblModOrigName = new System.Windows.Forms.Label();
-            this.checkSkipIntro = new System.Windows.Forms.CheckBox();
+            this.checkBackupSave = new System.Windows.Forms.CheckBox();
             this.grpInfo.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -185,15 +186,15 @@
             this.lblStep3.TabIndex = 12;
             this.lblStep3.Text = "Step 3.";
             // 
-            // lblPakPath
+            // lblSavePath
             // 
-            this.lblPakPath.AutoSize = true;
-            this.lblPakPath.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.lblPakPath.Location = new System.Drawing.Point(6, 89);
-            this.lblPakPath.Name = "lblPakPath";
-            this.lblPakPath.Size = new System.Drawing.Size(142, 13);
-            this.lblPakPath.TabIndex = 13;
-            this.lblPakPath.Text = "Pak folder: No path selected";
+            this.lblSavePath.AutoSize = true;
+            this.lblSavePath.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.lblSavePath.Location = new System.Drawing.Point(6, 89);
+            this.lblSavePath.Name = "lblSavePath";
+            this.lblSavePath.Size = new System.Drawing.Size(148, 13);
+            this.lblSavePath.TabIndex = 13;
+            this.lblSavePath.Text = "Save folder: No path selected";
             // 
             // lblPathLoaded
             // 
@@ -219,7 +220,7 @@
             this.grpInfo.Controls.Add(this.lblVersion);
             this.grpInfo.Controls.Add(this.label1);
             this.grpInfo.Controls.Add(this.lblSpyroPath);
-            this.grpInfo.Controls.Add(this.lblPakPath);
+            this.grpInfo.Controls.Add(this.lblSavePath);
             this.grpInfo.Location = new System.Drawing.Point(12, 455);
             this.grpInfo.Name = "grpInfo";
             this.grpInfo.Size = new System.Drawing.Size(741, 108);
@@ -249,6 +250,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBackupSave);
             this.groupBox1.Controls.Add(this.checkSkipIntro);
             this.groupBox1.Controls.Add(this.checkVanilla);
             this.groupBox1.Controls.Add(this.checkConsoleInjector);
@@ -266,6 +268,17 @@
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Instructions";
+            // 
+            // checkSkipIntro
+            // 
+            this.checkSkipIntro.AutoSize = true;
+            this.checkSkipIntro.Location = new System.Drawing.Point(171, 149);
+            this.checkSkipIntro.Name = "checkSkipIntro";
+            this.checkSkipIntro.Size = new System.Drawing.Size(115, 17);
+            this.checkSkipIntro.TabIndex = 21;
+            this.checkSkipIntro.Text = "Skip Intro Bumpers";
+            this.checkSkipIntro.UseVisualStyleBackColor = true;
+            this.checkSkipIntro.CheckedChanged += new System.EventHandler(this.checkSkipIntro_CheckedChanged);
             // 
             // checkVanilla
             // 
@@ -360,9 +373,9 @@
             this.lblModFileName.AutoSize = true;
             this.lblModFileName.Location = new System.Drawing.Point(3, 200);
             this.lblModFileName.Name = "lblModFileName";
-            this.lblModFileName.Size = new System.Drawing.Size(55, 13);
+            this.lblModFileName.Size = new System.Drawing.Size(52, 13);
             this.lblModFileName.TabIndex = 4;
-            this.lblModFileName.Text = "Filename: ";
+            this.lblModFileName.Text = "Filename:";
             // 
             // lblModCreator
             // 
@@ -382,16 +395,16 @@
             this.lblModOrigName.TabIndex = 0;
             this.lblModOrigName.Text = "Name:";
             // 
-            // checkSkipIntro
+            // checkBackupSave
             // 
-            this.checkSkipIntro.AutoSize = true;
-            this.checkSkipIntro.Location = new System.Drawing.Point(171, 149);
-            this.checkSkipIntro.Name = "checkSkipIntro";
-            this.checkSkipIntro.Size = new System.Drawing.Size(124, 17);
-            this.checkSkipIntro.TabIndex = 21;
-            this.checkSkipIntro.Text = "Skip Intro Cutscenes";
-            this.checkSkipIntro.UseVisualStyleBackColor = true;
-            this.checkSkipIntro.CheckedChanged += new System.EventHandler(this.checkSkipIntro_CheckedChanged);
+            this.checkBackupSave.AutoSize = true;
+            this.checkBackupSave.Location = new System.Drawing.Point(314, 149);
+            this.checkBackupSave.Name = "checkBackupSave";
+            this.checkBackupSave.Size = new System.Drawing.Size(91, 17);
+            this.checkBackupSave.TabIndex = 22;
+            this.checkBackupSave.Text = "Backup Save";
+            this.checkBackupSave.UseVisualStyleBackColor = true;
+            this.checkBackupSave.CheckedChanged += new System.EventHandler(this.checkBackupSave_CheckedChanged);
             // 
             // MainForm
             // 
@@ -440,7 +453,7 @@
         private System.Windows.Forms.Label lblStep1;
         private System.Windows.Forms.Label lblStep2;
         private System.Windows.Forms.Label lblStep3;
-        private System.Windows.Forms.Label lblPakPath;
+        private System.Windows.Forms.Label lblSavePath;
         private System.Windows.Forms.Label lblPathLoaded;
         private System.Windows.Forms.ListBox listMods;
         private System.Windows.Forms.GroupBox grpInfo;
@@ -459,6 +472,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox picThumbnail;
         private System.Windows.Forms.CheckBox checkSkipIntro;
+        private System.Windows.Forms.CheckBox checkBackupSave;
     }
 }
 

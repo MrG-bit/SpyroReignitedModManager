@@ -23,5 +23,8 @@ namespace SpyroModManager
 
         // Whether to skip intro cutscenes
         public bool skipIntro = false;
+
+        // Save backup
+        public bool saveBackup = true;
     }
 }

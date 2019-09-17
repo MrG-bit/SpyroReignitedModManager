@@ -21,15 +21,19 @@ namespace SpyroModManager
     public partial class MainForm : Form
     {
         // Version number of the program
-        private Version version = new Version(1, 2, 3);
+        private Version version = new Version(1, 3, 0);
 
-        private string spyroPath = "";      // File path to Spyro.exe (in Steam folders)
-        private string pakPath = "";        // Path to the pak folder (in Steam folders)
-        private string moviePath = "";      // Path to the movie folder (in Steam folders)
-        private bool wasSpyroOpen = false;  // Keep track of if spyro was open last time checked
-        private Timer injectorTimer = null; // Timer for opening the injector executable
-        private Timer cutsceneTimer = null; // Timer for re-enabling the cutscenes
-        private ModManagerData data;        // Reference to the mod manager data
+        private string spyroPath = "";          // File path to Spyro.exe (in Steam folders)
+        private string paksModPath = "";        // Path to the pak folder (in Steam folders)
+        private string pakPath = "";            // Path to normal pak folder
+        private string disabledPakModsPath = "";// Path to disabled mod folder
+        private string saveFilePath = "";       // Path to the save file folder
+        private string moviePath = "";          // Path to the movie folder (in Steam folders)
+        private bool wasSpyroOpen = false;      // Keep track of if spyro was open last time checked
+        private Timer injectorTimer = null;     // Timer for opening the injector executable
+        private Timer cutsceneTimer = null;     // Timer for re-enabling the cutscenes
+        private ModManagerData data;            // Reference to the mod manager data
+        private int highestOrder = 0;           // Largest order
 
         // List of mods loaded into the manager
         private BindingList<SpyroMod> mods = new BindingList<SpyroMod>();
@@ -38,11 +42,13 @@ namespace SpyroModManager
         private bool IsValidSpyroPath { get { return spyroPath != "" && spyroPath.ToLower().EndsWith("spyro.exe"); } }
         private bool IsValidInjectorPath { get { return data != null && !string.IsNullOrWhiteSpace(data.injectorPath) && data.injectorPath.ToLower().EndsWith(".exe") && File.Exists(data.injectorPath); } }
         private bool IsVanilla { get { return checkVanilla.Checked; } }
+        private bool DoBackupSave { get { return checkBackupSave.Checked; } }
         private bool ModFolderExists { get { return Directory.Exists(PathToModsFolder); } }
         private bool DataFileExists { get { return File.Exists(PathToDataFile); } }
         private string PathToModsFolder { get { return Application.StartupPath + "\\Spyro Reignited Mods"; } }
         private string PathToDataFile { get { return Application.StartupPath + "\\Data.dat"; } }
         private string PathToSpyroGame { get { return IsValidSpyroPath ?  spyroPath.Remove(spyroPath.Length - 9, 9) : ""; }        }
+        private string PathToSaveBackups { get { return saveFilePath + "Backups\\"; } }
         private string NewLine { get { return Environment.NewLine; } }
         private SpyroMod SelectedMod { get { if (listMods.SelectedIndex >= 0 && listMods.SelectedIndex < mods.Count) return mods[listMods.SelectedIndex]; else return null; } }
 
@@ -79,7 +85,7 @@ namespace SpyroModManager
             // Create timer for cutscenes
             cutsceneTimer = new Timer
             {
-                Interval = 20000,
+                Interval = 30000,
                 Enabled = false
             };
             cutsceneTimer.Tick += OnCutsceneTimerElapsed;
@@ -185,9 +191,11 @@ namespace SpyroModManager
                     checkVanilla.Enabled = false;
                     checkConsoleInjector.Enabled = false;
                     checkSkipIntro.Enabled = false;
+                    checkBackupSave.Enabled = false;
 
-                    // Disable launch button
+                    // Disable buttons
                     btnLaunchSpyro.Enabled = false;
+                    btnAddMod.Enabled = false;
                 }
                 // Otherwise spyro was closed
                 else
@@ -196,9 +204,11 @@ namespace SpyroModManager
                     checkVanilla.Enabled = true;
                     checkConsoleInjector.Enabled = true;
                     checkSkipIntro.Enabled = true;
+                    checkBackupSave.Enabled = true;
 
-                    // Enable the launch button
+                    // Enable buttons
                     btnLaunchSpyro.Enabled = true;
+                    btnAddMod.Enabled = true;
 
                     // Update vanilla and set files
                     SetVanilla(checkVanilla.Checked);
@@ -238,6 +248,9 @@ namespace SpyroModManager
                         // Load the mod
                         SpyroMod mod = SpyroMod.LoadFromFile(filePath);
 
+                        // Find the highest order
+                        highestOrder = Math.Max(highestOrder, mod.order);
+                        
                         // Add mod to list
                         mods.Add(mod);
                     }
@@ -288,17 +301,20 @@ namespace SpyroModManager
                 // Validate contents of the data file
                 ValidateDataObject();
 
-                // Try to load the spyro path that's in the config
-                SelectSpyroPath(data.spyroPath);
-
                 // Set if vanilla or not
                 SetVanilla(data.isVanilla);
+
+                // Set checkbox for auto save
+                checkBackupSave.Checked = data.saveBackup;
 
                 // Set checkbox for console injector
                 checkConsoleInjector.Checked = data.useInjector;
 
                 // Set checkbox for skipping cutscenes
                 checkSkipIntro.Checked = data.skipIntro;
+
+                // Try to load the spyro path that's in the config
+                SelectSpyroPath(data.spyroPath);
             }
         }
 
@@ -396,12 +412,75 @@ namespace SpyroModManager
                 // Update the spyro path label
                 lblSpyroPath.Text = "Spyro.exe path: " + spyroPath;
 
-                // Determine the pak path
+                // Determine the og pak path
                 pakPath = PathToSpyroGame + "Falcon\\Content\\Paks\\";
 
-                // Update the pak path label
-                lblPakPath.Text = "Pak folder: " + pakPath;
+                // Clear mods from paks folder
+                string[] pakFiles = Directory.GetFiles(pakPath);
 
+                // Iterate over the files
+                foreach (string fileName in pakFiles)
+                {
+                    // Get info on the file
+                    FileInfo fileInfo = new FileInfo(fileName);
+                    
+                    // Check if file is under 6 gigabytes
+                    if (fileInfo.Extension == ".pak" && fileInfo.Length <= 6442450944)
+                    {
+                        // Delete the pak file
+                        File.Delete(fileName);
+                    }
+                }
+
+                // Determine the pak mod path
+                paksModPath = PathToSpyroGame + "Falcon\\Content\\Paks\\~mods\\";
+                Directory.CreateDirectory(paksModPath);
+
+                // Determine the disabled pak path
+                disabledPakModsPath = PathToSpyroGame + "Falcon\\Content\\~disabled\\";
+                Directory.CreateDirectory(disabledPakModsPath);
+
+                // Determine the save file path
+                saveFilePath = FindSaveFilePath();
+                Directory.CreateDirectory(PathToSaveBackups);
+
+                // Check if not running vanilla
+                if (!IsVanilla)
+                {
+                    // Validate mods
+                    string[] enabledModFiles = Directory.GetFiles(paksModPath);
+                    string[] disabledModFiles = Directory.GetFiles(disabledPakModsPath);
+
+                    // Iterate through the file names
+                    for (int i = 0; i < enabledModFiles.Length + disabledModFiles.Length; ++i)
+                    {
+                        // Check if in the enabled folder or disabled folders
+                        bool inEnabledFolder = i < enabledModFiles.Length;
+
+                        // Get the file name
+                        string fileName = (inEnabledFolder ? enabledModFiles[i] : disabledModFiles[i - enabledModFiles.Length]);
+
+                        // Get file info
+                        FileInfo fileInfo = new FileInfo(fileName);
+
+                        // Spyro mod
+                        SpyroMod mod;
+
+                        // Check that the mod exists
+                        if (fileInfo.Extension == ".pak" && ModExists(fileInfo.Name, out mod))
+                        {
+                            // Enable and save
+                            mod.enabled = inEnabledFolder;
+                            SaveToModsFolder(mod);
+                        }
+                        // Otherwise delete the file
+                        else
+                        {
+                            // Delete the file
+                            File.Delete(fileName);
+                        }
+                    }
+                }
 
                 // Determine the movie path
                 moviePath = PathToSpyroGame + "Falcon\\Content\\Movies\\";
@@ -410,9 +489,16 @@ namespace SpyroModManager
                 lblPathLoaded.Text = "Path loaded";
                 lblPathLoaded.ForeColor = Color.Green;
 
+                // Update path labels
+                lblSpyroPath.Text = "Spyro.exe: " + PathToSpyroGame;
+                lblSavePath.Text = "Save folder: " + saveFilePath;
+
                 // Update data file
                 data.spyroPath = this.spyroPath;
                 SaveToDataFile(data);
+
+                // Disable button
+                btnSpyroPath.Enabled = false;
             }
         }
 
@@ -468,9 +554,10 @@ namespace SpyroModManager
 
             // Init the mod disabled
             mod.enabled = false;
-            
+
             // Set order
-            mod.order = mods.Count;
+            //mod.order = mods.Count;
+            mod.order = ++highestOrder;
 
             // Add mod to list of mods
             mods.Add(mod);
@@ -552,11 +639,17 @@ namespace SpyroModManager
             // Check if running mods
             if (!IsVanilla)
             {
-                // Determine the path to output the .pak file
-                string path = pakPath + "pakchunk" + (3 + mod.order) + "-" + mod.name + ".pak";
-
-                // Output the .pak content to the path
-                mod.ExportPak(path);
+                // Check if the file exists in the ~disabled folder
+                if (FileExists(mod.PakFileName, disabledPakModsPath))
+                {
+                    // Move to the ~mods folder
+                    File.Move(disabledPakModsPath + mod.PakFileName, paksModPath + mod.PakFileName);
+                }
+                else
+                {
+                    // Output the .pak content to the ~mods folder
+                    mod.ExportPak(paksModPath + mod.PakFileName);
+                }
             }
 
             // Update the mod
@@ -576,12 +669,12 @@ namespace SpyroModManager
             // Disable the mod
             mod.enabled = false;
 
-            // Determine the path to remove the .pak file
-            string path = pakPath + "pakchunk" + (3 + mod.order) + "-" + mod.name + ".pak";
-
-            // Delete the file if it exists
-            if (File.Exists(path))
-                File.Delete(path);
+            // Check if in ~mods folder
+            if (FileExists(mod.PakFileName, paksModPath))
+            {
+                // Move to ~disabled folder
+                File.Move(paksModPath + mod.PakFileName, disabledPakModsPath + mod.PakFileName);
+            }
 
             // Update the mod
             SaveToModsFolder(mod);
@@ -603,15 +696,17 @@ namespace SpyroModManager
             // Check if the mod is enabled and should be updated in the pak folder
             bool reactivate = mod.enabled;
 
-            // Disable the mod if it is activated
-            if (reactivate)
-                DisableMod(mod);
+            // Delete mod file from folder
+            File.Delete(PathToModsFolder + "\\" + mod.fileName);
 
-            // Remove the mod file, but not the instance
-            RemoveMod(mod, false);
+            // Remember the old pak name
+            string oldPakName = mod.PakFileName;
 
             // Update the name
             mod.name = newName;
+
+            // Update the pak name
+            mod.pakName = newName;
             
             // Update the file name
             mod.fileName = newName + SpyroMod.fileExtension;
@@ -625,15 +720,21 @@ namespace SpyroModManager
             // Update the thumbnail
             mod.SetThumbnail(thumbnailPath);
 
+            // Rename file if pak name changed
+            if (!oldPakName.Equals(mod.PakFileName))
+            {
+                string path = (mod.enabled ? paksModPath : disabledPakModsPath);
+
+                // Check file exists
+                if (File.Exists(path + oldPakName))
+                    File.Move(path + oldPakName, path + mod.PakFileName);
+            }
+
             // Validate file name
             ValidateFilename(mod, 1);
 
-            // Enable the mod if it was activated before (and save to file)
-            if (reactivate)
-                EnableMod(mod);
-            // Save the mod to file
-            else
-                SaveToModsFolder(mod);
+            // Save mod
+            SaveToModsFolder(mod);
         }
 
         /// <summary>
@@ -651,7 +752,10 @@ namespace SpyroModManager
             if (mod.enabled)
                 DisableMod(mod);
 
-            // Delete file
+            // Delete file from ~disabled
+            File.Delete(disabledPakModsPath + mod.PakFileName);
+
+            // Delete mod file from folder
             File.Delete(PathToModsFolder + "\\" + mod.fileName);
 
             // Remove the instance
@@ -667,8 +771,14 @@ namespace SpyroModManager
                 // Remove from list
                 mods.Remove(mod);
 
-                // Update button text
+                // Re-calculate highest order
+                highestOrder = 0;
+                foreach (SpyroMod m in mods)
+                    highestOrder = Math.Max(highestOrder, m.order);
+
+                // Update button text and description
                 UpdateListBindings();
+                SelectedModChanged();
             }
         }
         
@@ -757,6 +867,10 @@ namespace SpyroModManager
 #if DEBUG
                 txtModDescription.Text += NewLine + NewLine +
                     "Locked: " + SelectedMod.locked.ToString();
+                txtModDescription.Text += NewLine +
+                    "Pak Name: " + SelectedMod.PakFileName;
+                txtModDescription.Text += NewLine +
+                    "Highest Order: " + highestOrder;
 #endif
 
                 btnToggle.Text = SelectedMod.enabled ? "Disable" : "Enable";
@@ -810,6 +924,37 @@ namespace SpyroModManager
         }
 
         /// <summary>
+        /// Find the path to the save games.
+        /// </summary>
+        /// <returns></returns>
+        private string FindSaveFilePath()
+        {
+            // Check to cancel
+            if (!IsValidSpyroPath)
+                return "";
+
+            // Save file path
+            string saveFilePath = "";
+
+            // Get to user data folder
+            DirectoryInfo info = new DirectoryInfo(PathToSpyroGame);
+            string userDataPath = info.Parent.Parent.Parent.FullName + "\\userdata\\";
+
+            // Get steam users in folder
+            string[] steamUsers = Directory.GetDirectories(userDataPath);
+
+            // Find spyro in steam users
+            foreach (string user in steamUsers)
+            {
+                if (Directory.Exists(user + "\\996580"))
+                    saveFilePath = user + "\\996580\\remote\\Falcon\\Saved\\SaveGames\\";
+            }
+
+            // Return save file path
+            return saveFilePath;
+        }
+
+        /// <summary>
         /// Swap two elements in a list.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -821,6 +966,47 @@ namespace SpyroModManager
             T tmp = list[indexA];
             list[indexA] = list[indexB];
             list[indexB] = tmp;
+        }
+
+        /// <summary>
+        /// Check a mod exists.
+        /// </summary>
+        /// <param name="pakName"></param>
+        /// <param name="outMod"></param>
+        /// <returns></returns>
+        private bool ModExists(string pakName, out SpyroMod outMod)
+        {
+            foreach (SpyroMod mod in mods)
+            {
+                if (mod.PakFileName.Equals(pakName))
+                {
+                    outMod = mod;
+                    return true;
+                }
+            }
+            outMod = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a file exists in a folder.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        private bool FileExists(string fileName, string directory)
+        {
+            string[] files = Directory.GetFiles(directory);
+
+            foreach (string fName in files)
+            {
+                FileInfo fileInfo = new FileInfo(fName);
+
+                if (fileInfo.Name.Equals(fileName))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -936,8 +1122,53 @@ namespace SpyroModManager
                     cutsceneTimer.Start();
                 }
 
+                // Check that save file is valid
+                if (!string.IsNullOrWhiteSpace(saveFilePath))
+                {
+                    // If backup save
+                    if (DoBackupSave)
+                    {
+                        // Get files in save folder
+                        string[] fileNames = Directory.GetFiles(saveFilePath);
+
+                        // Iterate through
+                        foreach (string fileName in fileNames)
+                        {
+                            // Check for the save file
+                            if (fileName.EndsWith("FalconSave.106.sav"))
+                            {
+                                // Load content
+                                byte[] saveContent = File.ReadAllBytes(fileName);
+
+                                // Save to backup
+                                File.WriteAllBytes(PathToSaveBackups + DateTime.Now.ToString("yyyyMMddTHHmmss") + "-FalconSave.106.sav.backup", saveContent);
+                            }
+                        }
+                    }
+
+                    // Check for old saves
+                    string[] backupFiles = Directory.GetFiles(PathToSaveBackups);
+
+                    // Iterate over the files
+                    foreach (string backupFileName in backupFiles)
+                    {
+                        // Get fileinfo
+                        FileInfo fileInfo = new FileInfo(backupFileName);
+                        
+                        // Check if the file is 30 days old
+                        if ((DateTime.Now - fileInfo.CreationTime).TotalDays > 5)
+                        {
+                            // Delete the backup
+                            File.Delete(backupFileName);
+                        }
+                    }
+                }
+
                 // Start the process
                 Process.Start(spyroPath);
+
+                // Minimise the form
+                WindowState = FormWindowState.Minimized;
             }
         }
 
@@ -1168,6 +1399,13 @@ namespace SpyroModManager
         {
             // Save to file
             data.skipIntro = checkSkipIntro.Checked;
+            SaveToDataFile(data);
+        }
+
+        private void checkBackupSave_CheckedChanged(object sender, EventArgs e)
+        {
+            // Save to file
+            data.saveBackup = checkBackupSave.Checked;
             SaveToDataFile(data);
         }
     }
