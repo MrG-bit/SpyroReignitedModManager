@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.489
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpyroModManager", "SpyroModManager.csproj", "{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpyroModManager", "SpyroModManager\SpyroModManager.csproj", "{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AEEA23B-DCCB-4DAC-9D45-7B6F26EA037E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3295FDD9-BEE2-48E1-BD1C-F310FD62D61F}
+		SolutionGuid = {3C4FD9F6-D368-4763-88DB-5F475D24622F}
 	EndGlobalSection
 EndGlobal

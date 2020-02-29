@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9F80CF6E-3CE8-4525-A034-EB3D18AFECAF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SpyroModManager</RootNamespace>
+    <AssemblyName>SpyroModManager</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon_gem.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SpyroModManager.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DiscordRPC, Version=1.0.150.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DiscordRichPresence.1.0.150\lib\net35\DiscordRPC.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DarkTheme.cs" />
+    <Compile Include="Data.cs" />
+    <Compile Include="DiscordRP.cs" />
+    <Compile Include="EditModForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditModForm.Designer.cs">
+      <DependentUpon>EditModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCheatCodeList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCheatCodeList.Designer.cs">
+      <DependentUpon>FormCheatCodeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormDiscordRP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormDiscordRP.Designer.cs">
+      <DependentUpon>FormDiscordRP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLaunchOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLaunchOptions.Designer.cs">
+      <DependentUpon>FormLaunchOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLevelCodeList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLevelCodeList.Designer.cs">
+      <DependentUpon>FormLevelCodeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mod.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EditModForm.resx">
+      <DependentUpon>EditModForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCheatCodeList.resx">
+      <DependentUpon>FormCheatCodeList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormDiscordRP.resx">
+      <DependentUpon>FormDiscordRP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLaunchOptions.resx">
+      <DependentUpon>FormLaunchOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLevelCodeList.resx">
+      <DependentUpon>FormLevelCodeList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\image_spyroVersion_boxart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\image_spyroTitle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon_gem.ico" />
+    <None Include="Resources\image_cheat_black.jpg" />
+    <None Include="Resources\image_cheat_blue.jpg" />
+    <None Include="Resources\image_cheat_green.jpg" />
+    <None Include="Resources\image_cheat_pink.jpg" />
+    <None Include="Resources\image_cheat_purple.jpg" />
+    <None Include="Resources\image_cheat_red.jpg" />
+    <None Include="Resources\image_cheat_yellow.jpg" />
+    <None Include="Resources\image_cheat_sunglasses.jpg" />
+    <None Include="Resources\image_cheat_retro.jpg" />
+    <None Include="Resources\image_cheat_bighead.jpg" />
+    <None Include="Resources\image_cheat_smallhead.jpg" />
+    <None Include="Resources\image_cheat_flat.jpg" />
+    <None Include="Resources\image_cheat_smallWing.jpg" />
+    <None Include="Resources\image_cheat_squid.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
