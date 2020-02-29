@@ -31,7 +31,7 @@ You can purchase Spyro on the [Steam Store](https://store.steampowered.com/app/9
 
 ### Installing
 
-Step one: Download the latest version of *Spyro Reignited Mod Manager.exe* above.
+Step one: Download the latest version of *Spyro Reignited Mod Manager* above. Unzip it and extract the contents to a location of your choosing. Be sure to keep the three files together: *Spyro Reignited Mod Manager.exe*, *DiscordRPC.dll* and *Newtonsoft.Json.dll*.
 
 Step two: Launch the executable for first time setup.
 * The executable will create two files: *data.dat* and a directory named *mods*.
