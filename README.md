@@ -3,12 +3,19 @@
 This program allows creating & managing multiple mod files for use with the Steam release of Spyro Reignited Trilogy. You are able to import pakchunk (*.pak*) files into the manager which are then converted into mods. The mods can be enabled or disabled so you can choose which you want active when playing the game. They can also be rearranged to specify a loading priority. Mods can contain the following information: the name of the mod, creator of the mod, description of what the mod does, and a thumbnail to visually show the mod in action.
 </br></br>
 [>> Download from the Releases section <<](https://github.com/MrG-bit/SpyroReignitedModManager/releases)
-</br></br>
+<br></br>
+Features:
+* Now supports mods of any size
+* Discord Rich Presence implementation
+* Dark theme mode
+* Handy cheat code list
+
+<br></br>
 There are also various launch options: 
 * running the game using the Console Injector which will enable the developer console. Note that if you choose to use the Console Injector launch option, you must [download](https://drive.google.com/file/d/1Z6SY-c7wbEPN9FsM-kZHiqtYbAsA6F2g/view) the program.
 * skip the startup sequence (Toys For Bob, Activision & Unreal bumpers).
 * backup the save file (sometimes mods can corrupt your save file).
-
+<br></br>
 ![](SpyroMMScreenshot.png)
 ![](SpyroMMPreview.gif)
 
