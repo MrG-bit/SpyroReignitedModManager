@@ -1,0 +1,1 @@
+I have redacted the Discord Application ID from the source code
