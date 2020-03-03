@@ -28,7 +28,7 @@ namespace SpyroModManager
 
             lbl_PakName.Text = "Pak name: " + pakFileName;
             if (!string.IsNullOrWhiteSpace(mod.Name)) txt_modName.Text = mod.Name;
-            else if (!string.IsNullOrWhiteSpace(default)) txt_modName.Text = defaultName;
+            else if (!string.IsNullOrWhiteSpace(defaultName)) txt_modName.Text = defaultName;
             if (!string.IsNullOrWhiteSpace(mod.Author)) txt_modAuthor.Text = mod.Author;
             if (!string.IsNullOrWhiteSpace(mod.Description)) txt_modDescription.Text = mod.Description;
             if (mod.Image != null) pic_modImage.Image = mod.Image;

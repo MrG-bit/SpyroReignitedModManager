@@ -1,11 +1,12 @@
 ﻿///     Spyro Reignited Mod Manager
 ///     File: Mod.cs
-///     Last updated: 2020/02/28
+///     Last updated: 2020/03/04
 ///     Created by: MR.G-bit
 
 using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SpyroModManager
@@ -21,6 +22,29 @@ namespace SpyroModManager
             public string m_description = "";
             public uint m_order = 0;
             public Bitmap m_image = null;
+            public bool converted = false;
+        }
+
+        private class BindOverride : SerializationBinder
+        {
+            private static BindOverride instance;
+            public static BindOverride Instance
+            {
+                get { if (instance == null) { instance = new BindOverride(); } return instance; }
+            }
+
+            private BindOverride() { }
+
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                return assemblyName.Equals("NA") ? Type.GetType(typeName) : null;
+            }
+
+            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = "NA";
+                typeName = serializedType.FullName;
+            }
         }
 
         public static string EnabledPakDirectory { get; set; }
@@ -44,23 +68,42 @@ namespace SpyroModManager
             m_modDetails = new ModDetails();
         }
 
-        // Save mod details
+        // Save mod details using binary formatter
         public void SaveModDetails()
         {
-            FileStream fs = new FileStream(Path.Combine(ModDirectory, ModFileName), FileMode.OpenOrCreate);
-            BinaryFormatter bf = new BinaryFormatter();
-            bf.Serialize(fs, m_modDetails);
-            fs.Close();
+            try
+            {
+                FileStream fs = new FileStream(Path.Combine(ModDirectory, ModFileName), FileMode.OpenOrCreate, FileAccess.Write);
+                BinaryFormatter bf = new BinaryFormatter();
+                //bf.Binder = BindOverride.Instance;
+                bf.Serialize(fs, m_modDetails);
+                fs.Close();
+            }
+            catch (Exception) { }
         }
 
-        // Load mod details
+        // Load mod details using binary formatter
         public static Mod LoadModDetails(string filePath)
         {
             Mod mod = new Mod();
-            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            BinaryFormatter bf = new BinaryFormatter();
-            mod.m_modDetails = (ModDetails)bf.Deserialize(fs);
-            fs.Close();
+            try
+            {
+                FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                BinaryFormatter bf = new BinaryFormatter();
+                //bf.Binder = BindOverride.Instance;
+                mod.m_modDetails = (ModDetails)bf.Deserialize(fs);
+                fs.Close();
+
+                /*
+                if (mod.m_modDetails != null && !mod.m_modDetails.converted)
+                {
+                    mod.m_modDetails.converted = true;
+                    mod.SaveModDetails();
+                }
+                */
+            }
+            catch (Exception) { }
+
             return mod;
         }
 

@@ -1,7 +1,7 @@
 ﻿///     Spyro Reignited Mod Manager
-///     Version: 2.0.1
+///     Version: 2.0.2
 ///     File: MainForm.cs
-///     Last updated: 2020/02/29
+///     Last updated: 2020/03/02
 ///     Created by: MR.G-bit
 
 using System;
@@ -22,15 +22,16 @@ namespace SpyroModManager
         private string DataDirectory { get { return ApplicationDir; } }
         private string DataFileName { get { return "data.dat"; } }
         private bool IsPathLoaded { get { return !string.IsNullOrWhiteSpace(m_data.m_spyroDir); } }
-        private Mod SelectedMod { get { return (Mod)list_mods.SelectedItem; } }
+        private Mod SelectedMod { get { return list_mods.SelectedIndices.Count > 0 ? m_mods[list_mods.SelectedIndices[0]] : null; } }
+        private int SelectedIndex { get { return list_mods.SelectedIndices.Count > 0 ? list_mods.SelectedIndices[0] : -1; } set { list_mods.Items[value].Selected = true; } }
 
         private Data m_data = null;
         private readonly bool m_loading = false;
-        private BindingList<Mod> m_mods = new BindingList<Mod>();
-        private bool m_editingModList = false;
+        private List<Mod> m_mods = new List<Mod>();
         private readonly Timer m_injectorTimer = new Timer();
         private readonly Timer m_processTimer = new Timer();
         private Process m_spyroProcess = null;
+        private int m_enabledCount = 0;
 
         public MainForm()
         {
@@ -42,7 +43,7 @@ namespace SpyroModManager
             FormClosed += OnMainForm_FormClosed;
             Application.Idle += OnApplication_Idle;
 
-            lbl_version.Text = "Version: 2.0.1";
+            lbl_version.Text = "Version: 2.0.2";
 
             btn_addMod.Enabled = false;
             btn_launchSpyro.Enabled = false;
@@ -56,9 +57,8 @@ namespace SpyroModManager
             m_processTimer.Tick += OnProcessTimer_Tick;
             m_processTimer.Enabled = false;
 
-            list_mods.SelectedIndexChanged += OnSelectedModChanged;
-            list_mods.DrawItem += On_ListMods_DrawItem;
-
+            list_mods.SelectedIndexChanged += OnListMods_SelectedIndexChanged;
+            
             m_loading = true;
             InitDataFolder();
             InitModsFolder();
@@ -67,18 +67,11 @@ namespace SpyroModManager
             m_loading = false;
         }
 
-        private void On_ListMods_DrawItem(object sender, DrawItemEventArgs e)
+        // Called when the selected index is changed by the user
+        private void OnListMods_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (m_mods.Count == 0 || e.Index < 0) return;
-
-            Font font = e.Font;
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-                font = new Font(font, FontStyle.Bold);
-
-            e.DrawBackground();
-            e.Graphics.FillRectangle(new SolidBrush(m_mods[e.Index].Enabled ? Color.FromArgb(176, 255, 197) : Color.FromArgb(255, 176, 176)), e.Bounds);
-            e.Graphics.DrawString(list_mods.Items[e.Index].ToString(), font, new SolidBrush(SystemColors.WindowText), e.Bounds, null);
-            e.DrawFocusRectangle();
+            if (list_mods.Items.Count > 0 && list_mods.SelectedIndices.Count > 0)
+                SelectModItem(SelectedIndex);
         }
 
         // Idle update
@@ -163,14 +156,17 @@ namespace SpyroModManager
                         continue;
                     Mod mod = Mod.LoadModDetails(file);
                     mod.VerifyPak();
+                    if (mod.Enabled)
+                        ++m_enabledCount;
                     mods.Add(mod);
                 }
 
                 // Add mods to binding list
-                m_mods = new BindingList<Mod>(mods.OrderBy(m => m.Order).ToList());
-            }
+                m_mods = new List<Mod>(mods.OrderBy(m => m.Order));
 
-            list_mods.DataSource = m_mods;
+                for (int i = 0; i < m_mods.Count; ++i)
+                    AddModItem(i);
+            }
         }
 
         // Set up the spyro directory ~disabed and ~mods folders
@@ -199,8 +195,6 @@ namespace SpyroModManager
         // Swap order of mod
         private void SwapOrder(uint order, int direction)
         {
-            m_editingModList = true;
-
             Mod selectedMod = m_mods[(int)order];
             Mod swapWithMod = m_mods[(int)order + direction];
 
@@ -210,23 +204,23 @@ namespace SpyroModManager
             selectedMod.ChangeOrder((uint)(order + direction));
             swapWithMod.ChangeOrder(order);
 
-            m_mods.ResetBindings();
-
-            m_editingModList = false;
-            list_mods.SelectedIndex += direction;
+            SelectModItem((int)order + direction);
+            UpdateModItem((int)order);
         }
 
-        // Update buttons and description when selected mod changes
-        private void OnSelectedModChanged(object sender, EventArgs e)
+        // Select a mod item in the list view
+        private void SelectModItem(int index)
         {
-            if (m_editingModList || SelectedMod == null)
-                return;
+            if (SelectedIndex != index)
+                SelectedIndex = index;
+            
+            UpdateModItem(index);
 
             // Buttons
             btn_Toggle.Enabled = SelectedMod.IsConnectedToPak;
             btn_Toggle.Text = SelectedMod.Enabled ? "Disable" : "Enable";
-            btn_moveModDown.Enabled = list_mods.SelectedIndex < m_mods.Count - 1;
-            btn_moveModUp.Enabled = list_mods.SelectedIndex > 0;
+            btn_moveModDown.Enabled = SelectedIndex < m_mods.Count - 1;
+            btn_moveModUp.Enabled = SelectedIndex > 0;
             btn_editMod.Enabled = SelectedMod.IsConnectedToPak;
             btn_updateMod.ForeColor = SelectedMod.IsConnectedToPak ? Color.Black : Color.Red;
 
@@ -239,10 +233,37 @@ namespace SpyroModManager
             pic_modImage.Image = SelectedMod.Image == null ? Properties.Resources.image_spyroVersion_boxart : SelectedMod.Image;
         }
 
-        // Force update buttons and description
-        private void ForceSelectedModUpdate()
+        // Update a specific mod item in the list view
+        private void UpdateModItem(int index)
         {
-            OnSelectedModChanged(list_mods, new EventArgs());
+            ListViewItem listViewItem = list_mods.Items[index];
+            Mod mod = m_mods[index];
+            listViewItem.UseItemStyleForSubItems = false;
+            listViewItem.Text = mod.Order.ToString();
+            listViewItem.SubItems[1].Text = mod.Enabled ? "Enabled" : "Disabled";
+            listViewItem.SubItems[1].BackColor = mod.Enabled ? Color.FromArgb(176, 255, 197) : Color.FromArgb(255, 176, 176);
+            listViewItem.SubItems[2].Text = mod.Name;
+
+            if (m_enabledCount == 0)
+                btn_disableAll.Text = "Enable All";
+            else
+                btn_disableAll.Text = "Disable All";
+        }
+
+        // Add a mod item in the list view
+        private void AddModItem(int index)
+        {
+            ListViewItem listViewItem = new ListViewItem("");
+            listViewItem.SubItems.Add("");
+            listViewItem.SubItems.Add("");
+            list_mods.Items.Add(listViewItem);
+            UpdateModItem(index);
+        }
+
+        // Remove a mod item in the list view
+        private void RemoveModItem(int index)
+        {
+            list_mods.Items.RemoveAt(index);
         }
 
         // Enable or disable the intro cutscene files
@@ -352,7 +373,7 @@ namespace SpyroModManager
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 Mod mod = new Mod();
-                EditModForm editModForm = new EditModForm(mod, Path.GetFileName(fileDialog.FileName));
+                EditModForm editModForm = new EditModForm(mod, Path.GetFileName(fileDialog.FileName), Path.GetFileNameWithoutExtension(fileDialog.FileName));
                 if (editModForm.ShowDialog() == DialogResult.OK)
                 {
                     mod.Name = editModForm.ModName;
@@ -364,9 +385,8 @@ namespace SpyroModManager
                     mod.SaveModDetails();
 
                     m_mods.Add(mod);
-                    m_mods.ResetBindings();
-                    list_mods.SelectedIndex = m_mods.Count - 1;
-                    ForceSelectedModUpdate();
+                    AddModItem(m_mods.Count - 1);
+                    SelectModItem(m_mods.Count - 1);
                 }
             }
         }
@@ -380,12 +400,17 @@ namespace SpyroModManager
             if (SelectedMod.IsConnectedToPak)
             {
                 if (SelectedMod.Enabled)
+                {
                     SelectedMod.DisableMod();
+                    --m_enabledCount;
+                }
                 else
+                {
                     SelectedMod.EnableMod();
+                    ++m_enabledCount;
+                }
 
-                m_mods.ResetBindings();
-                ForceSelectedModUpdate();
+                UpdateModItem(SelectedIndex);
             }
         }
 
@@ -418,20 +443,21 @@ namespace SpyroModManager
                 File.Delete(Path.Combine(SelectedMod.PakDirectory, SelectedMod.PakFileName));
             File.Delete(Path.Combine(Mod.ModDirectory, SelectedMod.ModFileName));
 
-            m_editingModList = true;
-            int selectedIndex = list_mods.SelectedIndex;
+            int selectedIndex = SelectedIndex;
             for (int i = selectedIndex + 1; i < m_mods.Count; ++i)
+            {
                 m_mods[i].ChangeOrder(m_mods[i].Order - 1);
+                UpdateModItem(i);
+            }
+
+            if (SelectedMod.Enabled)
+                --m_enabledCount;
 
             m_mods.RemoveAt(selectedIndex);
+            RemoveModItem(selectedIndex);
 
-            m_editingModList = false;
-            m_mods.ResetBindings();
             if (m_mods.Count > 0)
-            {
-                list_mods.SelectedItem = m_mods[Math.Min(selectedIndex, m_mods.Count - 1)];
-                ForceSelectedModUpdate();
-            }
+                SelectModItem(Math.Min(selectedIndex, m_mods.Count - 1));
         }
 
         // Edit the selected mod
@@ -449,8 +475,7 @@ namespace SpyroModManager
                 SelectedMod.Description = editModForm.ModDescription;
                 SelectedMod.Image = editModForm.ModImage;
                 SelectedMod.SaveModDetails();
-                m_mods.ResetBindings();
-                ForceSelectedModUpdate();
+                UpdateModItem(SelectedIndex);
             }
         }
 
@@ -472,7 +497,7 @@ namespace SpyroModManager
                 if (SelectedMod.IsConnectedToPak)
                     File.Delete(Path.Combine(SelectedMod.PakDirectory, SelectedMod.PakFileName));
                 SelectedMod.ConnectPak(fileDialog.FileName);
-                ForceSelectedModUpdate();
+                UpdateModItem(SelectedIndex);
                 MessageBox.Show("Updated .pak file.", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -485,7 +510,6 @@ namespace SpyroModManager
             DarkTheme.ToggleDarkTheme(this, !DarkTheme.IsDarkTheme);
             m_data.m_darkTheme = DarkTheme.IsDarkTheme;
             m_data.Save(Path.Combine(DataDirectory, DataFileName));
-            ForceSelectedModUpdate();
         }
 
         // Launch game
@@ -567,11 +591,27 @@ namespace SpyroModManager
         // Disable all mods
         private void btn_disableAll_Click(object sender, EventArgs e)
         {
-            if (m_mods.Count == 0 || SelectedMod == null)
+            if (m_mods.Count == 0)
                 return;
 
-            foreach (Mod mod in m_mods)
-                mod.DisableMod();
+            if (m_enabledCount > 0)
+            {
+                m_enabledCount = 0;
+                for (int i = 0; i < m_mods.Count; ++i)
+                {
+                    m_mods[i].DisableMod();
+                    UpdateModItem(i);
+                }
+            }
+            else
+            {
+                m_enabledCount = m_mods.Count;
+                for (int i = 0; i < m_mods.Count; ++i)
+                {
+                    m_mods[i].EnableMod();
+                    UpdateModItem(i);
+                }
+            }
         }
 
         // Show list of cheat codes

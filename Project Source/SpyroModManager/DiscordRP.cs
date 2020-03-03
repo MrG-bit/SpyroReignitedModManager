@@ -21,7 +21,7 @@ namespace SpyroModManager
         // Initialise discord client
         public static void Initialise(string details, string state)
         {
-            client = new DiscordRpcClient("REDACTED");
+            client = new DiscordRpcClient("0");
             client.Initialize();
             ClientActive = true;
         }

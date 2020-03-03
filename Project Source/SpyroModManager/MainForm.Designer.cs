@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.list_mods = new System.Windows.Forms.ListBox();
             this.btn_chooseSpyroExe = new System.Windows.Forms.Button();
             this.group_instructions = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -63,6 +62,10 @@
             this.lbl_discordRPEnabled = new System.Windows.Forms.Label();
             this.btn_discordSettings = new System.Windows.Forms.Button();
             this.btn_disableAll = new System.Windows.Forms.Button();
+            this.list_mods = new System.Windows.Forms.ListView();
+            this.c_order = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_enabled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.c_name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.group_instructions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.group_modDetails.SuspendLayout();
@@ -70,17 +73,6 @@
             this.group_footer.SuspendLayout();
             this.group_settings.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // list_mods
-            // 
-            this.list_mods.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.list_mods.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.85F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.list_mods.FormattingEnabled = true;
-            this.list_mods.ItemHeight = 15;
-            this.list_mods.Location = new System.Drawing.Point(12, 12);
-            this.list_mods.Name = "list_mods";
-            this.list_mods.Size = new System.Drawing.Size(394, 409);
-            this.list_mods.TabIndex = 0;
             // 
             // btn_chooseSpyroExe
             // 
@@ -429,11 +421,42 @@
             this.btn_disableAll.UseVisualStyleBackColor = true;
             this.btn_disableAll.Click += new System.EventHandler(this.btn_disableAll_Click);
             // 
+            // list_mods
+            // 
+            this.list_mods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.c_order,
+            this.c_enabled,
+            this.c_name});
+            this.list_mods.FullRowSelect = true;
+            this.list_mods.HideSelection = false;
+            this.list_mods.Location = new System.Drawing.Point(12, 12);
+            this.list_mods.MultiSelect = false;
+            this.list_mods.Name = "list_mods";
+            this.list_mods.Size = new System.Drawing.Size(394, 409);
+            this.list_mods.TabIndex = 16;
+            this.list_mods.UseCompatibleStateImageBehavior = false;
+            this.list_mods.View = System.Windows.Forms.View.Details;
+            // 
+            // c_order
+            // 
+            this.c_order.Text = "Order";
+            this.c_order.Width = 45;
+            // 
+            // c_enabled
+            // 
+            this.c_enabled.Text = "Status";
+            // 
+            // c_name
+            // 
+            this.c_name.Text = "Name";
+            this.c_name.Width = 270;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(918, 640);
+            this.Controls.Add(this.list_mods);
             this.Controls.Add(this.btn_disableAll);
             this.Controls.Add(this.group_settings);
             this.Controls.Add(this.group_footer);
@@ -444,7 +467,6 @@
             this.Controls.Add(this.btn_moveModUp);
             this.Controls.Add(this.btn_Toggle);
             this.Controls.Add(this.group_instructions);
-            this.Controls.Add(this.list_mods);
             this.Name = "MainForm";
             this.ShowIcon = false;
             this.Text = "Spyro Reignited Mod Manager";
@@ -463,8 +485,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox list_mods;
         private System.Windows.Forms.Button btn_chooseSpyroExe;
         private System.Windows.Forms.GroupBox group_instructions;
         private System.Windows.Forms.Label lbl_pathLoaded;
@@ -498,6 +518,10 @@
         private System.Windows.Forms.Button btn_disableAll;
         private System.Windows.Forms.Button btn_showCheatList;
         private System.Windows.Forms.Button btn_levelCodes;
+        private System.Windows.Forms.ListView list_mods;
+        private System.Windows.Forms.ColumnHeader c_order;
+        private System.Windows.Forms.ColumnHeader c_enabled;
+        private System.Windows.Forms.ColumnHeader c_name;
     }
 }
 
