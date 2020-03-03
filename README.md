@@ -2,7 +2,7 @@
 
 This program allows creating & managing multiple mod files for use with the Steam release of Spyro Reignited Trilogy. You are able to import pakchunk (*.pak*) files into the manager which are then converted into mods. The mods can be enabled or disabled so you can choose which you want active when playing the game. They can also be rearranged to specify a loading priority. Mods can contain the following information: the name of the mod, creator of the mod, description of what the mod does, and a thumbnail to visually show the mod in action.
 </br></br>
-[>> Download from the Releases section <<](https://github.com/MrG-bit/SpyroReignitedModManager/releases)
+[>> Download the lastest release <<](https://github.com/MrG-bit/SpyroReignitedModManager/releases/latest)
 <br></br>
 Features:
 * Now supports mods of any size
